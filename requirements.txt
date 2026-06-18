@@ -1,0 +1,24 @@
+# Python dependencies for Tesla Solar Sync - Steampunk Grid Controller
+
+# Backend Framework
+fastapi>=0.110.0
+uvicorn>=0.30.0
+pydantic>=2.0
+
+# Database
+aiosqlite>=0.20.0
+
+# Security & Encryption
+pycryptodome>=3.20.0
+
+# Hardware & Vehicle Integrations
+goodwe>=0.4.0
+TeslaPy>=2.9.0
+
+# HTTP & WebSockets
+requests>=2.31.0
+websockets>=12.0
+
+# Testing & Quality Gates
+pytest>=8.0.0
+pytest-asyncio>=0.23.0
