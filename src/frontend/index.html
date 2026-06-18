@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tesla Solar Sync - Steampunk Grid Controller</title>
+    <!-- Premium Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Share+Tech+Mono&family=Special+Elite&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="index.css">
+</head>
+<body>
+    <div id="connection-overlay" class="overlay">
+        <div class="overlay-content">
+            <div class="steampunk-loader">
+                <div class="gear large-gear"></div>
+                <div class="gear medium-gear"></div>
+                <div class="gear small-gear"></div>
+            </div>
+            <h2 class="steampunk-heading">PRESSURE PRESSURE...</h2>
+            <p class="glowing-text">Stoking the boilers. Establishing connection to pressure mains...</p>
+        </div>
+    </div>
+
+    <!-- Tesla SSO Modal -->
+    <div id="auth-modal" class="modal">
+        <div class="modal-content riveted-panel">
+            <div class="panel-header">
+                <h3>TESLA SSO REGISTRY</h3>
+                <button class="close-btn" id="close-auth-modal">&times;</button>
+            </div>
+            <div class="panel-body">
+                <p class="instruction-text">To establish connection with the Tesla vehicle, we must register credentials through the official secure SSO portal.</p>
+                
+                <div class="step-card">
+                    <span class="step-num">1</span>
+                    <p>Initialize official Tesla authorization protocol page in a secure window:</p>
+                    <a id="tesla-sso-link" href="#" target="_blank" class="steampunk-btn glow-amber">OPEN TESLA SSO PORTAL</a>
+                </div>
+
+                <div class="step-card">
+                    <span class="step-num">2</span>
+                    <p>Login on Tesla's site, then <strong>copy the final URL</strong> of the landing page (starts with <code>tesla://auth/callback...</code> or contains <code>code=</code>) and paste it below:</p>
+                    <textarea id="redirect-url-input" class="blueprint-input" placeholder="Paste the entire redirect callback URL here..."></textarea>
+                </div>
+
+                <div class="actions-row">
+                    <button id="submit-auth-btn" class="steampunk-btn glow-crimson">REGISTER CREDENTIALS</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="steampunk-dashboard">
+        <!-- Dashboard Header -->
+        <header class="dashboard-header riveted-panel">
+            <div class="header-decor decoration-screws">
+                <div class="screw"></div>
+                <div class="screw"></div>
+            </div>
+            <div class="brand-container">
+                <div class="pressure-gauge-small">
+                    <div class="gauge-needle" id="header-gauge-needle"></div>
+                </div>
+                <div class="brand-text">
+                    <h1 class="brand-title">TESLA SOLAR SYNC</h1>
+                    <span class="brand-subtitle">LOCALIZED DYNAMIC THREE-PHASE ENERGY DISTRIBUTOR</span>
+                </div>
+            </div>
+
+            <!-- Header System Status LEDs -->
+            <div class="status-indicator-rack">
+                <div class="indicator-led" id="led-inverter">
+                    <div class="led-bulb"></div>
+                    <span class="led-label">INVERTER</span>
+                </div>
+                <div class="indicator-led" id="led-tesla">
+                    <div class="led-bulb"></div>
+                    <span class="led-label">VEHICLE</span>
+                </div>
+                <div class="indicator-led" id="led-automation">
+                    <div class="led-bulb"></div>
+                    <span class="led-label">AUTO-TRACK</span>
+                </div>
+            </div>
+
+            <div class="header-decor decoration-screws">
+                <div class="screw"></div>
+                <div class="screw"></div>
+            </div>
+        </header>
+
+        <!-- Mechanical Tab Lever Group -->
+        <nav class="tab-lever-control riveted-panel">
+            <button class="tab-btn active" data-tab="status-tab">
+                <span class="lever-notch"></span>
+                <span class="tab-label">STATUS PANEL</span>
+            </button>
+            <button class="tab-btn" data-tab="analytics-tab">
+                <span class="lever-notch"></span>
+                <span class="tab-label">CRT ANALYTICS</span>
+            </button>
+            <button class="tab-btn" data-tab="history-tab">
+                <span class="lever-notch"></span>
+                <span class="tab-label">BRASS REGISTER</span>
+            </button>
+            <button class="tab-btn" data-tab="config-tab">
+                <span class="lever-notch"></span>
+                <span class="tab-label">BLUEPRINT TERMINAL</span>
+            </button>
+        </nav>
+
+        <!-- Main Workspace -->
+        <main class="dashboard-workspace">
+            
+            <!-- TAB 1: STATUS PANEL -->
+            <section id="status-tab" class="tab-panel active">
+                <div class="status-layout">
+                    <!-- Left: Flow Diagram canvas -->
+                    <div class="panel-section power-flow-container riveted-panel">
+                        <div class="section-title-bar">
+                            <h2>KINETIC POWER FLOW</h2>
+                            <span class="sub-label">REAL-TIME ENERGY PARTICLES</span>
+                        </div>
+                        <div class="flow-canvas-wrapper" id="svg-flow-wrapper">
+                            <!-- SVG Energy Conduits & Nodes will go here dynamically -->
+                        </div>
+                    </div>
+
+                    <!-- Right: Console Controls -->
+                    <div class="panel-section control-board-container riveted-panel">
+                        <div class="section-title-bar">
+                            <h2>CONSOLE CONTROL BOARD</h2>
+                            <span class="sub-label">TACTILE COMMAND INTERFACES</span>
+                        </div>
+
+                        <!-- Main Dial Meters -->
+                        <div class="nixie-meters-row">
+                            <div class="nixie-tube-glass">
+                                <span class="nixie-unit">SOLAR POWER</span>
+                                <div class="nixie-display" id="nixie-solar">00000</div>
+                                <span class="nixie-dim">WATTS</span>
+                            </div>
+                            <div class="nixie-tube-glass">
+                                <span class="nixie-unit">GRID PRESS</span>
+                                <div class="nixie-display" id="nixie-grid">00000</div>
+                                <span class="nixie-dim" id="grid-press-label">EXPORT</span>
+                            </div>
+                        </div>
+
+                        <!-- Knife Switch Control Toggle -->
+                        <div class="control-widget knife-switch-panel">
+                            <span class="widget-label">TRACKING MODE SELECTOR</span>
+                            <div class="knife-switch-container">
+                                <div class="knife-switch-labels">
+                                    <span class="switch-lbl" id="lbl-smart">SMART TRACK</span>
+                                    <span class="switch-lbl" id="lbl-manual">OVERRIDE</span>
+                                </div>
+                                <div class="knife-switch-slot" id="knife-switch">
+                                    <div class="knife-lever">
+                                        <div class="knife-handle"></div>
+                                    </div>
+                                    <div class="contact-clip contact-left"></div>
+                                    <div class="contact-clip contact-right"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Amperage Slider and Override nixie -->
+                        <div class="control-widget potentiometer-panel disabled" id="potentiometer-widget">
+                            <span class="widget-label">OVERRIDE CURRENT (AMPS)</span>
+                            <div class="potentiometer-row">
+                                <div class="slider-track-container">
+                                    <input type="range" id="current-slider" min="5" max="16" value="10" step="1" class="brass-potentiometer" disabled>
+                                    <div class="scale-notches">
+                                        <span>5A</span><span>8A</span><span>10A</span><span>12A</span><span>14A</span><span>16A</span>
+                                    </div>
+                                </div>
+                                <div class="small-nixie-glass">
+                                    <div class="small-nixie" id="nixie-current-target">10</div>
+                                    <span class="nixie-dim">A</span>
+                                </div>
+                            </div>
+
+                            <div class="override-countdown-row">
+                                <span class="widget-label-sub">OVERRIDE COUNTDOWN TIMEOUT</span>
+                                <div class="countdown-nixie-container">
+                                    <div class="countdown-nixie" id="nixie-countdown">00:00:00</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Tesla SSO activation / account details -->
+                        <div class="tesla-account-widget">
+                            <div class="account-header">
+                                <span class="widget-label-sub">VEHICLE DEPLOYMENT DETAILS</span>
+                                <span class="mode-tag" id="tesla-mode-tag">MOCK MODE</span>
+                            </div>
+                            <div class="account-body">
+                                <div class="status-table">
+                                    <div class="row"><span>Dynamo Model:</span><strong id="val-tesla-name">Dynamo (Simulated)</strong></div>
+                                    <div class="row"><span>Vehicle State:</span><strong id="val-tesla-state">ONLINE</strong></div>
+                                    <div class="row"><span>Battery SoC:</span><strong id="val-tesla-soc">62%</strong></div>
+                                    <div class="row"><span>Energy Added:</span><strong id="val-tesla-energy">0.00 kWh</strong></div>
+                                </div>
+                                <button id="btn-show-auth" class="steampunk-btn mini-btn glow-amber">AUTHENTICATE NEW ACCOUNT</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 2: CRT ANALYTICS -->
+            <section id="analytics-tab" class="tab-panel">
+                <div class="analytics-layout riveted-panel">
+                    <div class="crt-monitor-frame">
+                        <div class="crt-screen">
+                            <div class="crt-scanlines"></div>
+                            <div class="crt-bezel-shadow"></div>
+                            <div class="crt-header">
+                                <span class="crt-title">TELEMETRY OSCILLOSCOPE MONITOR (1Hz RAW SENSORS)</span>
+                                <span class="crt-dot"></span>
+                            </div>
+                            <div class="canvas-chart-wrapper">
+                                <canvas id="crt-oscilloscope-canvas"></canvas>
+                            </div>
+                            <div class="crt-legend">
+                                <span class="legend-item text-amber">● SOLAR PPV</span>
+                                <span class="legend-item text-steel">● HOUSE LOAD</span>
+                                <span class="legend-item text-crimson">● EV CHARGE</span>
+                                <span class="legend-item text-teal">● GRID EXPORT</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 3: BRASS REGISTER (History) -->
+            <section id="history-tab" class="tab-panel">
+                <div class="history-layout">
+                    <!-- Historical Metric Cards (Odometer readouts) -->
+                    <div class="odometer-row">
+                        <div class="odometer-card riveted-panel">
+                            <span class="odometer-label">TOTAL SOLAR CAPTURED</span>
+                            <div class="odometer-display" id="odometer-solar">000000.0</div>
+                            <span class="odometer-unit">KILOWATT-HOURS</span>
+                        </div>
+                        <div class="odometer-card riveted-panel">
+                            <span class="odometer-label">CO2 DEVIATION METRIC</span>
+                            <div class="odometer-display" id="odometer-co2">000000.0</div>
+                            <span class="odometer-unit">KG OFFSET</span>
+                        </div>
+                        <div class="odometer-card riveted-panel">
+                            <span class="odometer-label">UTILITY SAVINGS INDEX</span>
+                            <div class="odometer-display" id="odometer-savings">$00000.00</div>
+                            <span class="odometer-unit">CURRENCY UNITS</span>
+                        </div>
+                    </div>
+
+                    <!-- Typewriter tabular grid -->
+                    <div class="historical-register riveted-panel">
+                        <div class="section-title-bar">
+                            <h2>DAILY LOG REGISTRY</h2>
+                            <span class="sub-label">TYPEWRITER ARCHIVAL LOGS</span>
+                        </div>
+                        <div class="table-scroll-container">
+                            <table class="brass-table" id="daily-log-table">
+                                <thead>
+                                    <tr>
+                                        <th>TIMESTAMP DATE</th>
+                                        <th>SOLAR GENERATED</th>
+                                        <th>EV DIVERTED CHG</th>
+                                        <th>GRID IMPORTED</th>
+                                        <th>GRID EXPORTED</th>
+                                        <th>CAPTURE EFFICIENCY</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td colspan="6" class="text-center italic text-dim">Reading archive vaults...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 4: BLUEPRINT TERMINAL (Config) -->
+            <section id="config-tab" class="tab-panel">
+                <div class="config-layout">
+                    <div class="config-blueprint riveted-panel">
+                        <div class="section-title-bar">
+                            <h2>SYSTEM BLUEPRINT SETUP</h2>
+                            <span class="sub-label">CONFIGURATION TERMINAL</span>
+                        </div>
+                        
+                        <form id="config-form" class="blueprint-form">
+                            <div class="blueprint-section">
+                                <h3 class="blueprint-heading">⚡ ELECTRICAL GRID PARAMETERS</h3>
+                                
+                                <div class="blueprint-row">
+                                    <div class="blueprint-field">
+                                        <label for="cfg-grid-phases">GRID CONNECTION SCHEME</label>
+                                        <div class="blueprint-toggle-group">
+                                            <input type="radio" name="grid_phases" id="cfg-phases-1" value="1">
+                                            <label for="cfg-phases-1" class="radio-label">SINGLE-PHASE (230W/A)</label>
+                                            
+                                            <input type="radio" name="grid_phases" id="cfg-phases-3" value="3" checked>
+                                            <label for="cfg-phases-3" class="radio-label">THREE-PHASE (690W/A)</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="blueprint-section">
+                                <h3 class="blueprint-heading">📈 SMOOTHING & PACE ADJUSTERS</h3>
+                                
+                                <div class="blueprint-row">
+                                    <div class="blueprint-field">
+                                        <label for="cfg-ema-alpha">EMA SMOOTHING COEFFICIENT (ALPHA)</label>
+                                        <div class="slider-field-row">
+                                            <input type="range" id="cfg-ema-alpha" min="0.01" max="1.0" step="0.01" value="0.10" class="blueprint-slider">
+                                            <span class="blueprint-badge" id="val-cfg-alpha">0.10</span>
+                                        </div>
+                                        <p class="field-desc">Low values damp out passing cloud oscillations. High values track real-time solar immediately.</p>
+                                    </div>
+                                </div>
+
+                                <div class="blueprint-row">
+                                    <div class="blueprint-field">
+                                        <label for="cfg-override-duration">DEFAULT OVERRIDE LOCK DURATION (MINS)</label>
+                                        <input type="number" id="cfg-override-duration" min="5" max="1440" value="120" class="blueprint-input-small">
+                                        <span class="blueprint-input-unit">MINUTES</span>
+                                        <p class="field-desc">The default duration the potentiometer override remains active before reverting to smart automation.</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="blueprint-section">
+                                <h3 class="blueprint-heading">🌐 LOCAL NETWORKS</h3>
+                                
+                                <div class="blueprint-row">
+                                    <div class="blueprint-field">
+                                        <label>ACTIVE CREDENTIAL SECRET (VAULT)</label>
+                                        <input type="text" class="blueprint-input disabled" value="••••••••••••••••••••••••••••••••" disabled>
+                                        <p class="field-desc">AES-256 GCM key derived via PBKDF2 (100,000 iterations). Stored securely at rest.</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="blueprint-actions">
+                                <button type="button" id="btn-reset-form" class="steampunk-btn outline-btn">DISCARD REVISIONS</button>
+                                <button type="submit" id="btn-save-config" class="steampunk-btn glow-amber">COMMIT BLUEPRINT REVISIONS</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+
+        <!-- Dashboard Footer (Oiled Steel Plate) -->
+        <footer class="dashboard-footer riveted-panel">
+            <div class="footer-decor">
+                <span class="decor-pipe"></span>
+            </div>
+            <div class="footer-content">
+                <div class="footer-tick">
+                    <span class="ticker-label">MAIN ENGINE LOG:</span>
+                    <span class="ticker-content" id="system-log-ticker">System operational. Ready for deployment.</span>
+                </div>
+                <div class="server-epoch">
+                    <span>PRESSURE ALTITUDE MAINS:</span>
+                    <strong id="server-time-display">00:00:00</strong>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- ES6 App Entry Module -->
+    <script type="module" src="app.js"></script>
+</body>
+</html>
