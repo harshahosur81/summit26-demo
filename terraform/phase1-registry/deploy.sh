@@ -22,7 +22,8 @@ echo "🎯 Target Registry: $REGISTRY_URL"
 # 3. Submit code to Google Cloud Build using the fetched URL
 echo -e "\n🏗️ Step 3/3: Submitting workspace to Google Cloud Build..."
 cd ../..
-gcloud builds submit --tag "${REGISTRY_URL}/solar-sync-app:latest" . --project=labops-389703
+PROJECT_ID=$(echo "$REGISTRY_URL" | cut -d'/' -f2)
+gcloud builds submit --tag "${REGISTRY_URL}/solar-sync-app:latest" . --project="$PROJECT_ID"
 
 echo -e "\n========================================================================"
 echo "🎉 Phase 1 Automation Successful!"
