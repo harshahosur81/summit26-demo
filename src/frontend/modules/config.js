@@ -10,6 +10,13 @@ export class BlueprintConfigManager {
         this.alphaSlider = document.getElementById("cfg-ema-alpha");
         this.alphaBadge = document.getElementById("val-cfg-alpha");
         
+        // Loop Tuning Elements
+        this.tuningSlider = document.getElementById("ema-tuning-slider");
+        this.tuningNixieVal = document.getElementById("nixie-ema-alpha-val");
+        this.tuningWindow = document.getElementById("val-tuning-window");
+        this.tuningSafety = document.getElementById("val-tuning-safety");
+        this.tuningJitter = document.getElementById("val-tuning-jitter");
+        
         // Auth Modal Elements
         this.btnShowAuth = document.getElementById("btn-show-auth");
         this.authModal = document.getElementById("auth-modal");
@@ -35,8 +42,29 @@ export class BlueprintConfigManager {
 
         // Wire up Alpha Slider Badge instant updater
         this.alphaSlider.addEventListener("input", (e) => {
-            this.alphaBadge.textContent = parseFloat(e.target.value).toFixed(2);
+            const val = parseFloat(e.target.value);
+            this.alphaBadge.textContent = val.toFixed(2);
+            if (this.tuningSlider) {
+                this.tuningSlider.value = val;
+                this.updateTuningUI(val);
+            }
         });
+
+        // Wire up Loop Tuning Slider instant updater
+        if (this.tuningSlider) {
+            this.tuningSlider.addEventListener("input", (e) => {
+                const val = parseFloat(e.target.value);
+                this.updateTuningUI(val);
+                if (this.alphaSlider) {
+                    this.alphaSlider.value = val;
+                    this.alphaBadge.textContent = val.toFixed(2);
+                }
+            });
+            this.tuningSlider.addEventListener("change", async (e) => {
+                const val = parseFloat(e.target.value);
+                await this.pushTuningConfig(val);
+            });
+        }
 
         // Wire up Save and Discard
         this.form.addEventListener("submit", (e) => this.handleSave(e));
@@ -69,9 +97,23 @@ export class BlueprintConfigManager {
     }
 
     /**
-     * Applies a config object directly onto form fields.
+     * Syncs configuration values coming from real-time status packets without spamming logs.
      */
-    applyConfigToForm(cfg) {
+    syncConfig(cfg) {
+        if (!cfg) return;
+
+        // Ensure user is not currently sliding/tuning controls when syncing from server
+        const activeEl = document.activeElement;
+        if (activeEl !== this.alphaSlider && activeEl !== this.tuningSlider) {
+            this.serverConfig = cfg;
+            this.applyConfigToForm(cfg, true);
+        }
+    }
+
+    /**
+     * Applies a config object directly onto form fields and tuning dials.
+     */
+    applyConfigToForm(cfg, silent = false) {
         if (!cfg) return;
         
         // Phases
@@ -88,14 +130,117 @@ export class BlueprintConfigManager {
         // Override Lock Duration
         document.getElementById("cfg-override-duration").value = cfg.override_duration_mins;
         
-        this.logToTicker("Operational specifications synced from central database.");
+        // Update Tuning Panel UI elements
+        this.updateTuningUI(cfg.ema_alpha);
+        
+        if (!silent) {
+            this.logToTicker("Operational specifications synced from central database.");
+        }
+    }
+
+    /**
+     * Updates loop tuning visual elements, safety text and active light segments.
+     */
+    updateTuningUI(alpha) {
+        if (!this.tuningSlider) return;
+
+        this.tuningSlider.value = alpha;
+        if (this.tuningNixieVal) {
+            this.tuningNixieVal.textContent = parseFloat(alpha).toFixed(2);
+        }
+
+        const windowSecs = Math.round(10 / alpha);
+        if (this.tuningWindow) {
+            this.tuningWindow.textContent = `~${windowSecs} seconds`;
+        }
+
+        const segments = [
+            document.getElementById("seg-1"),
+            document.getElementById("seg-2"),
+            document.getElementById("seg-3"),
+            document.getElementById("seg-4"),
+            document.getElementById("seg-5")
+        ];
+
+        // Reset segments
+        segments.forEach(seg => {
+            if (seg) seg.className = "light-segment";
+        });
+
+        if (alpha <= 0.05) {
+            if (this.tuningSafety) {
+                this.tuningSafety.textContent = "MAXIMUM SAFE";
+                this.tuningSafety.style.color = "var(--color-teal)";
+                this.tuningSafety.style.textShadow = "0 0 4px var(--color-teal-glow)";
+            }
+            if (this.tuningJitter) {
+                this.tuningJitter.textContent = "LOW";
+                this.tuningJitter.style.color = "var(--color-teal)";
+                this.tuningJitter.style.textShadow = "0 0 4px var(--color-teal-glow)";
+            }
+            segments.forEach(seg => seg && seg.classList.add("active-teal"));
+        } else if (alpha <= 0.15) {
+            if (this.tuningSafety) {
+                this.tuningSafety.textContent = "BALANCED";
+                this.tuningSafety.style.color = "var(--color-teal)";
+                this.tuningSafety.style.textShadow = "0 0 4px var(--color-teal-glow)";
+            }
+            if (this.tuningJitter) {
+                this.tuningJitter.textContent = "LOW";
+                this.tuningJitter.style.color = "var(--color-teal)";
+                this.tuningJitter.style.textShadow = "0 0 4px var(--color-teal-glow)";
+            }
+            for (let i = 0; i < 4; i++) {
+                if (segments[i]) segments[i].classList.add("active-teal");
+            }
+        } else if (alpha <= 0.35) {
+            if (this.tuningSafety) {
+                this.tuningSafety.textContent = "MODERATE";
+                this.tuningSafety.style.color = "var(--color-nixie-orange)";
+                this.tuningSafety.style.textShadow = "0 0 4px var(--color-nixie-glow)";
+            }
+            if (this.tuningJitter) {
+                this.tuningJitter.textContent = "MODERATE";
+                this.tuningJitter.style.color = "var(--color-nixie-orange)";
+                this.tuningJitter.style.textShadow = "0 0 4px var(--color-nixie-glow)";
+            }
+            for (let i = 0; i < 3; i++) {
+                if (segments[i]) segments[i].classList.add("active-amber");
+            }
+        } else if (alpha <= 0.70) {
+            if (this.tuningSafety) {
+                this.tuningSafety.textContent = "LOW DAMPENING";
+                this.tuningSafety.style.color = "var(--color-nixie-orange)";
+                this.tuningSafety.style.textShadow = "0 0 4px var(--color-nixie-glow)";
+            }
+            if (this.tuningJitter) {
+                this.tuningJitter.textContent = "HIGH";
+                this.tuningJitter.style.color = "var(--color-crimson)";
+                this.tuningJitter.style.textShadow = "0 0 4px var(--color-crimson-glow)";
+            }
+            if (segments[0]) segments[0].classList.add("active-amber");
+            if (segments[1]) segments[1].classList.add("active-amber");
+            if (segments[2]) segments[2].classList.add("active-crimson");
+        } else {
+            if (this.tuningSafety) {
+                this.tuningSafety.textContent = "UNPROTECTED (RAW)";
+                this.tuningSafety.style.color = "var(--color-crimson)";
+                this.tuningSafety.style.textShadow = "0 0 4px var(--color-crimson-glow)";
+            }
+            if (this.tuningJitter) {
+                this.tuningJitter.textContent = "SEVERE";
+                this.tuningJitter.style.color = "var(--color-crimson)";
+                this.tuningJitter.style.textShadow = "0 0 4px var(--color-crimson-glow)";
+            }
+            if (segments[0]) segments[0].classList.add("active-crimson");
+        }
     }
 
     /**
      * Commits adjusted settings into backend storage.
      */
     async handleSave(e) {
-        e.preventDefault();
+        if (e) e.preventDefault();
 
         const grid_phases = parseInt(this.form.querySelector('input[name="grid_phases"]:checked').value);
         const ema_alpha = parseFloat(this.alphaSlider.value);
@@ -119,6 +264,34 @@ export class BlueprintConfigManager {
             this.logToTicker("Operational parameters successfully committed to database registry.");
         } catch (err) {
             this.logToTicker(`ERR: Failed to commit blueprint adjustments: ${err.message}`);
+        }
+    }
+
+    /**
+     * Pushes real-time slider tuning adjustments down to the REST controller.
+     */
+    async pushTuningConfig(alpha) {
+        const grid_phases = parseInt(this.form.querySelector('input[name="grid_phases"]:checked').value) || 3;
+        const override_duration_mins = parseInt(document.getElementById("cfg-override-duration").value) || 120;
+
+        const payload = { grid_phases, ema_alpha: alpha, override_duration_mins };
+
+        try {
+            const resp = await fetch("/api/v1/config", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload)
+            });
+
+            if (!resp.ok) {
+                const detail = await resp.json();
+                throw new Error(detail.detail || "Validation check failed.");
+            }
+
+            this.serverConfig = payload;
+            this.logToTicker(`Live Loop Optimization parameter committed: alpha set to ${alpha.toFixed(2)}.`);
+        } catch (err) {
+            this.logToTicker(`ERR: Failed to update tuning coefficient: ${err.message}`);
         }
     }
 

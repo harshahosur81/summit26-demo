@@ -46,20 +46,25 @@ class MockGoodWeInverter:
         sim_hour = progress * 24.0
         
         # Calculate solar power (sine curve between 6:00 and 18:00)
+        # Calculate solar power (floated above a baseline to guarantee positive values during live demos)
+        base_solar = 3200.0
+        peak_solar = 4300.0
+        
         if 6.0 <= sim_hour <= 18.0:
             # Normalized peak shape
             angle = math.pi * (sim_hour - 6.0) / 12.0
-            solar_power = self.max_solar_w * math.sin(angle)
+            solar_power = base_solar + (peak_solar * math.sin(angle))
             
             # Simulate passing cloud dropouts (e.g. sharp drop between 11:00 and 12:00, or 14:00 and 14:30)
             if 11.0 <= sim_hour <= 11.7:
                 # Passing heavy cloud - drops power by 80%
-                solar_power *= 0.20
+                solar_power = base_solar + (peak_solar * math.sin(angle) * 0.20)
             elif 14.5 <= sim_hour <= 15.2:
                 # Intermittent cloud - drops power by 50%
-                solar_power *= 0.50
+                solar_power = base_solar + (peak_solar * math.sin(angle) * 0.50)
         else:
-            solar_power = 0.0
+            # Night time has a robust ambient baseline to prevent 0W dead zones
+            solar_power = base_solar + (math.sin(now * 0.2) * 200.0)
             
         # Simulate household consumption with diurnal bumps (morning/evening peaks)
         # Bumps at 7:00-9:00 and 17:00-21:00
