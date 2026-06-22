@@ -1,6 +1,6 @@
 # Live Demonstration Playbook: Agentic SDLC & Platform Evolution
 
-This playbook is the canonical guide for live demonstrations of the **Tesla Solar Sync** application using **Antigravity-CLI**. It is structured specifically for presenters (even those unfamiliar with the app) to showcase **Lite-SDLC agentic-development workflows**—highlighting the human-agent collaborative handshake rather than just static code outputs.
+This playbook is the canonical guide for live demonstrations of the **Tesla Solar Sync** application using **Antigravity-CLI**. It is structured specifically for presenters (even those unfamiliar with the app) to showcase **Lite-SDLC agentic-development workflows**—highlighting the human-agent collaborative handshake using explicit slash command triggers.
 
 ---
 
@@ -10,7 +10,7 @@ When presenting this application, the core "wow" factor is showing how **Antigra
 
 ```mermaid
 graph TD
-    A["1. Handshake & Scoping <br> (Ambiguous Prompt & /grill-me Interview)"] --> B["2. Planning & Blueprinting <br> (Markdown Spec & Plan Artifacts)"]
+    A["1. Handshake & Scoping <br> (Explicit Slash Commands & /grill-me Interview)"] --> B["2. Planning & Blueprinting <br> (Markdown Spec & Plan Artifacts)"]
     B --> C["3. Guardrailed Execution <br> (Precise Code Diffs & Local Pytest)"]
     C --> D["4. Automated Deployment <br> (Google Cloud Build & Cloud Run Push)"]
 ```
@@ -22,7 +22,7 @@ graph TD
 | ID | Category | Scenario Name | Primary Files Involved | Target Impact | Git Demo Branch |
 | :--- | :--- | :--- | :--- | :--- | :--- |
 | **SC-1** | **Fix** | Kinetic Power Flow & CRT Viewport Fix | `src/frontend/modules/svg_flow.js`<br>`src/frontend/index.css` | Align SVG conduits on-axis, round telemetry floats, and constrain CRT container overflow. | `scenario/sc-1-fix` |
-| ****SC-2**** | **Feature** | Integrated "Lux Sync" Cohesion Dial | `src/frontend/modules/svg_flow.js` | Create an integrated central dial measuring real-time solar self-sufficiency. | `scenario/sc-2-feature` |
+| **SC-2** | **Feature** | Integrated "Lux Sync" Cohesion Dial | `src/frontend/modules/svg_flow.js` | Create an integrated central dial measuring real-time solar self-sufficiency. | `scenario/sc-2-feature` |
 | **SC-3** | **Optimization** | Dynamic EMA Alpha Control Loop Tuning | `src/frontend/index.html`<br>`src/frontend/index.css`<br>`src/frontend/modules/config.js`<br>`src/frontend/app.js` | Add a tactile configuration slider and Nixie readout to adjust loop dampening on-the-fly. | `scenario/sc-3-optimization` |
 
 ---
@@ -30,10 +30,10 @@ graph TD
 ## SC-1: Kinetic Power Flow & CRT Viewport Fix (The "Fix" Scenario)
 
 ### 1. The Human-Agent Handshake (Scoping)
-* **The Ambiguous Starting Prompt:**
-  > *"The energy lines on our steampunk dashboard look crooked and the metrics are overlapping. Also, the CRT monitor at the bottom is bleeding over the engine logs. Can you fix this?"*
+* **The Explicit Starting Prompt:**
+  > `/goal Analyze our steampunk dashboard UI and resolve three visual issues: 1) Mathematically align the off-axis energy conduit SVG pipelines leading to the center gear, 2) Wrap all raw decimal telemetry metrics in integer rounding to prevent label overlap, and 3) Constrain the CRT monitor's height in CSS so its scanning shadows do not bleed over the footer log ticker.`
 * **The Agentic Workflow:**
-  Instead of guessing, the agent scans the active UI code (`src/frontend/modules/svg_flow.js` and `src/frontend/index.css`), identifies coordinate mismatches, and asks the user to clarify whether they want to maintain exact pixel symmetry or responsive fluid scaling.
+  By prefixing the request with the explicit **`/goal`** trigger, the presenter tells the CLI to launch a comprehensive, thorough agent task that won't stop until all three criteria are verified. The agent scans the active UI code, identifies the exact coordinates, and structures a solution.
 
 ### 2. Design & Planning (The Blueprint)
 * **The Agentic Plan:**
@@ -64,10 +64,10 @@ graph TD
 ## SC-2: Integrated "Lux Sync" Cohesion Dial (The "Feature" Scenario)
 
 ### 1. The Human-Agent Handshake (Scoping & `/grill-me`)
-* **The Ambiguous Starting Prompt:**
-  > *"I want to show solar charging efficiency in a premium way. Maybe some kind of central sync gauge?"*
+* **The Explicit Starting Prompt:**
+  > `/grill-me I want to show solar charging efficiency in a premium way. Maybe some kind of central sync gauge?`
 * **The Agentic Workflow:**
-  The agent recommends running the **`/grill-me`** command to align on specifications. It interviews the user, asking:
+  By prefixing the prompt with the explicit **`/grill-me`** trigger, the presenter forces the Antigravity-CLI to immediately bypass raw code writing and enter the interactive scoping interview loop. The agent boots its requirement-scoping persona and asks 2–3 precise architectural questions to lock down specifications:
   1. *What should the formula be?* (Determines: Cohesion % is Solar divided by Total House + EV load).
   2. *Where should it live?* (Determines: Overlaying the central rotating gears of the flow SVG).
   3. *What should the color states represent?* (Determines: Red for heavy grid imports, Teal/Green for 100% solar self-sufficiency).
@@ -89,7 +89,7 @@ graph TD
 1. **Checkout Branch:** `git checkout scenario/sc-2-feature`
 2. **The Set-up:** Load the app. The simulated Solar is producing a robust **>3200W**. The EV is standby. The central **Lux Sync** gauge reads **100% Cohesion** (Teal/Green needle).
 3. **The Grid Stress Trigger:** Flick the copper knife-switch to **Manual Mode** and slide the EV charging current up to **16A**.
-4. **The Real-Time Reaction:** As the EV charging power jumps to $11,040\text{W}$, demand dwarfs solar. The needle sweeps counter-clockwise to **~30%**, shifting to **Crimson** to indicate heavy grid imports.
+4. **The Real-Time Reaction:** As the EV charging power jumps to $11,040\text{W}$, demand suddenly dwarfs solar. The needle sweeps counter-clockwise to **~30%**, shifting to **Crimson** to indicate heavy grid imports.
 5. **The Resolution:** Flip back to **Automatic Smart Tracking**. The charging rate throttles down, and the needle sweeps smoothly back to **100%** (Teal/Green).
 
 ---
@@ -97,10 +97,10 @@ graph TD
 ## SC-3: Dynamic EMA Alpha Control Smoothing (The "Optimization" Scenario)
 
 ### 1. The Human-Agent Handshake (Scoping)
-* **The Ambiguous Starting Prompt:**
-  > *"When the solar levels jitter, the EV relays toggle too fast. We need a way to tune loop dampening on-the-fly."*
+* **The Explicit Starting Prompt:**
+  > `/goal When the solar levels jitter, the EV relays toggle too fast. We need a way to tune Exponential Moving Average loop dampening on-the-fly. Create a physical dampening dial on the frontend that pushes real-time alpha config updates down to the Python backend.`
 * **The Agentic Workflow:**
-  The agent scans the backend charging loop logic, identifies the Exponential Moving Average (EMA) smoothing coefficient ($\alpha$), and asks the user if they want a frontend-accessible tuning controller to adjust this parameter live.
+  The presenter triggers the **`/goal`** command to instruct the agent to run a thorough control loop optimization cycle. The agent scans the backend charging loop logic, identifies the EMA smoothing coefficient ($\alpha$), and outlines a plan to construct a frontend control station.
 
 ### 2. Design & Planning (The Blueprint)
 * **The Agentic Plan:**
