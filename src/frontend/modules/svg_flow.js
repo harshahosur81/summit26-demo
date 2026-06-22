@@ -153,10 +153,30 @@ export class EnergyFlowDiagram {
                 <text id="val-flow-tesla" y="12" font-family="'Share Tech Mono'" font-size="13" font-weight="bold" fill="#c22929" text-anchor="middle">OFFLINE</text>
             </g>
 
-            <!-- CENTRAL INVERTER OVERLAY COVER -->
+            <!-- GREEN SYNC COHESION GAUGE CORE -->
             <g transform="translate(300, 200)">
-                <circle r="20" fill="rgba(20,20,20,0.85)" stroke="#111" stroke-width="2" />
-                <text y="4" font-family="'Special Elite'" font-size="8" fill="#bda154" text-anchor="middle">CORE</text>
+                <!-- Bezel and dial backplate -->
+                <circle r="36" fill="url(#metal-copper)" stroke="#111" stroke-width="2" />
+                <circle r="31" fill="#0c0a08" stroke="#1f1812" stroke-width="1.5" />
+                
+                <!-- Cohesion Scale Arc (From 0% Red on Left to 100% Green/Teal on Right) -->
+                <path d="M -22,12 A 25,22 0 0,1 22,12" fill="none" stroke="#221c15" stroke-width="2" />
+                <!-- 0% to 50% Red zone -->
+                <path d="M -22,12 A 25,22 0 0,1 0,-25" fill="none" stroke="#c22929" stroke-width="2" stroke-dasharray="1 3" opacity="0.6" />
+                <!-- 50% to 100% Teal zone -->
+                <path d="M 0,-25 A 25,22 0 0,1 22,12" fill="none" stroke="#14c2c2" stroke-width="2" stroke-dasharray="1 3" opacity="0.8" />
+                
+                <!-- Central Core Label -->
+                <text y="-13" font-family="'Special Elite'" font-size="7" fill="#bda154" text-anchor="middle">LUX SYNC</text>
+                
+                <!-- Dynamic % Display -->
+                <text id="gauge-cohesion" y="21" font-family="'Share Tech Mono'" font-size="9" font-weight="bold" fill="#14c2c2" text-anchor="middle">100%</text>
+                
+                <!-- Sync Needle -->
+                <line id="gauge-needle" x1="0" y1="0" x2="0" y2="-26" stroke="#14c2c2" stroke-width="2" stroke-linecap="round" filter="url(#glow-green)" />
+                
+                <!-- Hub cover nut -->
+                <circle cx="0" cy="0" r="5" fill="url(#metal-copper)" stroke="#111" stroke-width="1.5" />
             </g>
         `;
 
@@ -170,7 +190,9 @@ export class EnergyFlowDiagram {
             teslaText: svg.getElementById("val-flow-tesla"),
             solarNode: svg.getElementById("node-solar"),
             gridNode: svg.getElementById("node-grid"),
-            teslaNode: svg.getElementById("node-tesla")
+            teslaNode: svg.getElementById("node-tesla"),
+            gaugeNeedle: svg.getElementById("gauge-needle"),
+            gaugeCohesion: svg.getElementById("gauge-cohesion")
         };
 
         this.conduits = {
@@ -245,6 +267,45 @@ export class EnergyFlowDiagram {
             this.nodes.gridText.setAttribute("fill", "#c22929");
             this.nodes.gridNode.querySelector('circle').setAttribute("stroke", "#c22929");
             this.nodes.gridNode.querySelector('circle').setAttribute("filter", "url(#glow-crimson)");
+        }
+
+        // 1.5. Calculate Green Sync Cohesion (%)
+        // Computes percentage of total load (house + EV) covered by local solar generation.
+        const totalLoadW = houseW + evPowerW;
+        let cohesionPct = 100;
+        
+        if (totalLoadW > 0) {
+            cohesionPct = Math.round(Math.min(solarW / totalLoadW, 1.0) * 100);
+        }
+        
+        // Needle angle scales from -110 degrees (0% sync) to +110 degrees (100% sync)
+        const angle = -110 + (cohesionPct / 100) * 220;
+        
+        if (this.nodes.gaugeNeedle) {
+            this.nodes.gaugeNeedle.setAttribute("transform", `rotate(${angle})`);
+            // Dynamic needle color based on cohesion efficiency
+            let needleColor = "#14c2c2"; // High (Green/Teal)
+            let needleGlow = "url(#glow-green)";
+            if (cohesionPct < 40) {
+                needleColor = "#c22929"; // Low (Red)
+                needleGlow = "url(#glow-crimson)";
+            } else if (cohesionPct < 80) {
+                needleColor = "#ff8c00"; // Moderate (Amber)
+                needleGlow = "url(#glow-amber)";
+            }
+            this.nodes.gaugeNeedle.setAttribute("stroke", needleColor);
+            this.nodes.gaugeNeedle.setAttribute("filter", needleGlow);
+        }
+        
+        if (this.nodes.gaugeCohesion) {
+            this.nodes.gaugeCohesion.textContent = `${cohesionPct}%`;
+            let textColor = "#14c2c2";
+            if (cohesionPct < 40) {
+                textColor = "#c22929";
+            } else if (cohesionPct < 80) {
+                textColor = "#ff8c00";
+            }
+            this.nodes.gaugeCohesion.setAttribute("fill", textColor);
         }
 
         if (tesla.state === "online" || tesla.state === "charging") {
