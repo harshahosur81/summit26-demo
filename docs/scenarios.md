@@ -9,7 +9,7 @@ This document serves as the canonical playbook for live demonstrations of the Te
 | ID | Category | Scenario Name | Primary Files Involved | Target Impact | Status |
 | :--- | :--- | :--- | :--- | :--- | :--- |
 | **SC-1** | **Fix** | Kinetic Power Flow & CRT Viewport Fix | `src/frontend/modules/svg_flow.js`<br>`src/frontend/index.css` | Align SVG conduits on-axis, round telemetry floats, and constrain CRT container overflow. | **Approved & Live** |
-| **SC-2** | **Feature** | Grid Stress Analog Steam Gauge | `src/frontend/index.html`<br>`src/frontend/modules/steam_gauge.js`<br>`src/backend/main.py` | Create an analog-style steampunk dial depicting live grid import/export intensity. | **Ready for Dev** |
+| **SC-2** | **Feature** | Integrated "Lux Sync" Green Cohesion Dial | `src/frontend/modules/svg_flow.js` | Create an integrated central dial measuring real-time solar self-sufficiency. | **Approved & Live** |
 | **SC-3** | **Optimization** | Dynamic EMA Alpha Control Loop Tuning | `src/frontend/modules/config.js`<br>`src/backend/main.py`<br>`src/backend/drivers/goodwe_driver.py` | Add a tactile configuration slider to adjust solar data smoothing on-the-fly. | **Ready for Dev** |
 
 ---
@@ -69,80 +69,67 @@ Constrained the active oscilloscope layout and the surrounding CRT glass screen 
 * **Result:** The visual paths are now perfectly straight, telemetry reads as integers, and the CRT screen bezel sits beautifully inside the panel without overlapping the footer log ticker.
 * **Live Site:** [https://tesla-solar-sync-614327680171.australia-southeast1.run.app](https://tesla-solar-sync-614327680171.australia-southeast1.run.app)
 
----
-
-## SC-2: Grid Stress Analog Steam Gauge (The "Feature" Scenario)
+## SC-2: Integrated "Lux Sync" Green Cohesion Dial (The "Feature" Scenario)
 
 ### 1. Concept & User Experience
-To reinforce the Neo-Futuristic Steampunk theme, we will add an **Analog Steam Pressure Gauge** to the center console. This gauge represents "Grid Stress" (import vs. export intensity):
-* **High Grid Import (Stress):** Needle swings aggressively clockwise into the "Overpressure / Crimson Red" zone ($100\%$ grid stress), indicating heavy fossil-fuel grid consumption.
-* **Balanced Net-Zero ($0\text{W}$ Grid):** Needle settles at $50\%$ (vertical), showing perfect equilibrium.
-* **High Solar Export (Venting):** Needle sweeps counter-clockwise into the "Venting / Brass Gold" zone, representing clean excess power returning to the grid.
+To ground the dashboard metrics in intuitive electrical charging context, we created the **"Lux Sync" Green Cohesion Dial** directly inside the central gear core assembly. This gauge measures how cleanly the EV is charging using local solar vs. utility grid power:
+* **The Formula:** Calculates the fraction of total consumption (house + EV) covered by local solar generation, returning a value from $0\%$ to $100\%$:
+  $$\text{Cohesion (\%)} = \min\left(\frac{\text{Solar Generation}}{\text{House Load} + \text{EV Charging Power}}, 1.0\right) \times 100$$
+* **100% Cohesion (High Efficiency):** Needle sweeps clockwise to $+110^\circ$ (colored Green/Teal) indicating that local solar is completely meeting all active household loads and charging demand.
+* **Low Cohesion (High Grid Stress):** Needle sweeps counter-clockwise to $-110^\circ$ (colored Crimson/Red) indicating that the system is heavily dependent on imported utility power.
+* **Steampunk Name:** `LUX SYNC COHESION GAUGE`
 
 ### 2. Technical Implementation Architecture
 
-#### HTML Shell additions (`src/frontend/index.html`)
-Introduce a dedicated SVG gauge component within the central dashboard grid:
+#### Central SVG Core Dial (`src/frontend/modules/svg_flow.js`)
+Rather than creating an isolated panel, we integrated the gauge directly overlaying the rotating central gears of our SVG flow diagram:
 ```html
-<div class="steam-gauge-panel">
-    <div class="panel-header">GRID STRESS STEAM PRESSURE</div>
-    <svg id="steam-gauge" viewBox="0 0 200 200" width="100%" height="100%">
-        <!-- Outer brass bezel -->
-        <circle cx="100" cy="100" r="85" stroke="url(#metal-copper)" stroke-width="8" fill="#1e1b18" />
-        <!-- Gauge face markings -->
-        <path d="M 40,150 A 70,70 0 1,1 160,150" fill="none" stroke="#443c35" stroke-width="4" stroke-dasharray="2, 6" />
-        <!-- Pressure Zones -->
-        <path d="M 40,150 A 70,70 0 0,1 100,30" fill="none" stroke="#cca43b" stroke-width="6" opacity="0.6" /> <!-- Export -->
-        <path d="M 100,30 A 70,70 0 0,1 160,150" fill="none" stroke="#c22929" stroke-width="6" opacity="0.6" /> <!-- Import -->
-        <!-- Needle -->
-        <line id="gauge-needle" x1="100" y1="100" x2="100" y2="40" stroke="#ff8c00" stroke-width="4" stroke-linecap="round" />
-        <!-- Hub nut -->
-        <circle cx="100" cy="100" r="12" fill="url(#metal-iron)" stroke="#cca43b" stroke-width="2" />
-    </svg>
-    <div class="pressure-reading" id="gauge-label">0% PSI</div>
-</div>
+            <!-- GREEN SYNC COHESION GAUGE CORE -->
+            <g transform="translate(300, 200)">
+                <!-- Bezel and dial backplate -->
+                <circle r="36" fill="url(#metal-copper)" stroke="#111" stroke-width="2" />
+                <circle r="31" fill="#0c0a08" stroke="#1f1812" stroke-width="1.5" />
+                
+                <!-- Cohesion Scale Arc (From 0% Red on Left to 100% Green/Teal on Right) -->
+                <path d="M -22,12 A 25,22 0 0,1 22,12" fill="none" stroke="#221c15" stroke-width="2" />
+                <!-- 0% to 50% Red zone -->
+                <path d="M -22,12 A 25,22 0 0,1 0,-25" fill="none" stroke="#c22929" stroke-width="2" stroke-dasharray="1 3" opacity="0.6" />
+                <!-- 50% to 100% Teal zone -->
+                <path d="M 0,-25 A 25,22 0 0,1 22,12" fill="none" stroke="#14c2c2" stroke-width="2" stroke-dasharray="1 3" opacity="0.8" />
+                
+                <!-- Central Core Label -->
+                <text y="-13" font-family="'Special Elite'" font-size="7" fill="#bda154" text-anchor="middle">LUX SYNC</text>
+                
+                <!-- Dynamic % Display -->
+                <text id="gauge-cohesion" y="21" font-family="'Share Tech Mono'" font-size="9" font-weight="bold" fill="#14c2c2" text-anchor="middle">100%</text>
+                
+                <!-- Sync Needle -->
+                <line id="gauge-needle" x1="0" y1="0" x2="0" y2="-26" stroke="#14c2c2" stroke-width="2" stroke-linecap="round" filter="url(#glow-green)" />
+                
+                <!-- Hub cover nut -->
+                <circle cx="0" cy="0" r="5" fill="url(#metal-copper)" stroke="#111" stroke-width="1.5" />
+            </g>
 ```
 
-#### Client-side script module (`src/frontend/modules/steam_gauge.js`)
-Calculates the rotational angle of the gauge needle based on grid metrics.
-* **Target angle range:** $-120^\circ$ (high export) to $+120^\circ$ (high import).
+#### Client-Side Controller updates (`src/frontend/modules/svg_flow.js`)
+The needle's transform is adjusted on-the-fly, dynamically shifting color filters based on cohesion tiers:
 ```javascript
-export class SteamGauge {
-    constructor() {
-        this.needle = document.getElementById("gauge-needle");
-        this.label = document.getElementById("gauge-label");
-    }
-
-    update(gridW) {
-        // Grid Stress Logic: 
-        // Max Export scale assumed to be 5000W, Max Import scale 5000W.
-        const maxScale = 5000;
-        let stress = 0; // -1 to +1
-
-        if (gridW >= 0) {
-            // Exporting: Needle moves counter-clockwise (- stress)
-            stress = -Math.min(gridW / maxScale, 1);
-        } else {
-            // Importing: Needle moves clockwise (+ stress)
-            stress = Math.min(Math.abs(gridW) / maxScale, 1);
+        const totalLoadW = houseW + evPowerW;
+        let cohesionPct = 100;
+        
+        if (totalLoadW > 0) {
+            cohesionPct = Math.round(Math.min(solarW / totalLoadW, 1.0) * 100);
         }
-
-        const angle = stress * 120; // Scale to -120 to +120 deg
-        this.needle.style.transform = `rotate(${angle}deg)`;
-        this.needle.style.transformOrigin = "100px 100px";
-
-        const percentage = Math.round(Math.abs(stress) * 100);
-        const prefix = gridW >= 0 ? "VENTING (EXP)" : "OVERPRESSURE (IMP)";
-        this.label.textContent = `${prefix}: ${percentage}% PSI`;
-    }
-}
+        
+        const angle = -110 + (cohesionPct / 100) * 220; // Maps 0-100% to -110deg to +110deg
+        this.nodes.gaugeNeedle.setAttribute("transform", `rotate(${angle})`);
 ```
 
 ### 3. Demonstration Flow during Live Pitch
-1. **Step 1:** Activate "Manual Mode" knife switch and crank current to $16\text{A}$.
-2. **Step 2:** Watch the **Steam Gauge** needle swing deep clockwise into the red "OVERPRESSURE" zone as solar output fails to cover the load and grid import climbs.
-3. **Step 3:** Switch back to "Automatic Solar Tracking".
-4. **Step 4:** Watch the charge rate drop dynamically, reducing grid draw, causing the **Steam Gauge** needle to slide back toward the balanced center ($0\%$ PSI).
+1. **The Set-up:** Load the app. The **Solar** is producing a robust **>3200W** (optimized to never fall to 0W). The car is standby. The central **Lux Sync** gauge reads **100% Cohesion** (Teal/Green needle), showing maximum solar self-sufficiency.
+2. **The Grid Stress Trigger:** Flick the copper knife-switch to **Manual Mode** and slide the EV charging current up to **16A**.
+3. **The Real-Time Reaction:** As the EV charging power jumps to $11,040\text{W}$ (at 3-phase), demand suddenly dwarfs solar. The needle sweeps counter-clockwise to **~30%**, shifting to **Amber/Red** to indicate a heavy grid import requirement.
+4. **The Resolution:** Flip the switch back to **Automatic Smart Tracking**. The charging rate throttles down instantly, grid draw returns to zero, and the central needle sweeps smoothly back to **100%** (Teal/Green).
 
 ---
 
