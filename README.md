@@ -6,6 +6,16 @@ An automated, highly dynamic EV charging current controller (5A to 16A scaling) 
 
 ## 🛠️ Deployment & Setup Instructions
 
+> [!IMPORTANT]
+> **Default & Recommended Deployment (Google Cloud Platform)**
+> This application is architected to run as a production-grade service on **Google Cloud** via Cloud Run with dynamic GCS FUSE mounting and Secret Manager.
+> 
+> For the complete, automated 3-phase Terraform configuration and instructions, please refer directly to the **[DEPLOY.md](DEPLOY.md)** guide.
+
+---
+
+### Local Development Setup
+
 Ensure your target machine has **Python 3.10+** and **Git** installed.
 
 ### 1. Clone the Repository
