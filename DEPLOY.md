@@ -78,3 +78,19 @@ If you prefer to review or run each phase individually:
    ```
 
 Once completed, the script in Phase 3 outputs your live public **Dashboard URL**.
+
+---
+
+## 🔗 Accessing the Application
+
+Once the deployment has finished successfully, you can access the application as follows:
+
+1. **Retrieve the Service URL:**
+   The Phase 3 Terraform state outputs the public HTTPS URL of your Cloud Run service. You can retrieve it at any time by running:
+   ```bash
+   cd terraform/phase3-app
+   terraform output -raw service_url
+   ```
+
+2. **Open in Browser:**
+   Copy the output URL (which will have a format like `https://tesla-solar-sync-xxxxxx.a.run.app`) and open it in your preferred web browser to access the interactive Steampunk Grid Controller dashboard.
