@@ -152,7 +152,8 @@ async def aggregate_and_prune():
             FROM telemetry_log 
             WHERE date(timestamp, 'unixepoch', 'localtime') != ?
         """, (today_str,)) as cursor:
-            dates = [row["log_date"] for row in cursor if row["log_date"]]
+            rows = await cursor.fetchall()
+            dates = [row["log_date"] for row in rows if row["log_date"]]
             
         for d in dates:
             # Check if we already have daily_aggregates for this date

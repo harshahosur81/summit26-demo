@@ -1,0 +1,24 @@
+# Google Cloud Core Parameters
+project_id   = "your-gcp-project-id-here"
+region       = "us-central1"
+service_name = "tesla-solar-sync"
+
+# AES-256 Vault Crypto Key (Required, generate a secure 32-character string)
+# Example: vault_secret = "jq2>PZN9byE>7gL%your_secret_32_chars"
+vault_secret = "your_secure_32_character_vault_key_here"
+
+# Tesla Owner Account SSO Email
+# If kept as "user@example.com", the engine starts in Mock Emulation Mode.
+# Set this to your actual registered email to engage real-world TeslaPy connections.
+tesla_email = "user@example.com"
+
+# GoodWe Hybrid Inverter LAN Parameters
+# Set to local IP address (e.g. "192.168.1.150") to connect to local UDP.
+# Keep empty/unconfigured to engage simulated diurnal GoodWe emulator.
+inverter_ip = ""
+
+# Global Energy Constants
+grid_phases            = 3
+ema_alpha              = 0.1
+override_duration_mins = 120
+image_tag              = "latest"
