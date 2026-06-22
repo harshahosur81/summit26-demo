@@ -8,7 +8,7 @@ An automated, highly dynamic EV charging current controller (5A to 16A scaling) 
 
 > [!IMPORTANT]
 > **Default & Recommended Deployment (Google Cloud Platform)**
-> This application is architected to run as a production-grade service on **Google Cloud** via Cloud Run with dynamic GCS FUSE mounting and Secret Manager.
+> This application is architected to run as a cloud-native service on **Google Cloud** via Cloud Run with dynamic GCS FUSE mounting and Secret Manager.
 > 
 > For the complete, automated 3-phase Terraform configuration and instructions, please refer directly to the **[DEPLOY.md](DEPLOY.md)** guide.
 
