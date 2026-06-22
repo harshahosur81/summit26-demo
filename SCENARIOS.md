@@ -31,7 +31,9 @@ graph TD
 
 ### 1. The Human-Agent Handshake (Scoping)
 * **The Explicit Starting Prompt:**
-  > `/goal Analyze our steampunk dashboard UI and resolve three visual issues: 1) Mathematically align the off-axis energy conduit SVG pipelines leading to the center gear, 2) Wrap all raw decimal telemetry metrics in integer rounding to prevent label overlap, and 3) Constrain the CRT monitor's height in CSS so its scanning shadows do not bleed over the footer log ticker.`
+  ```bash
+  /goal Analyze our steampunk dashboard UI and resolve three visual issues: 1) Mathematically align the off-axis energy conduit SVG pipelines leading to the center gear, 2) Wrap all raw decimal telemetry metrics in integer rounding to prevent label overlap, and 3) Constrain the CRT monitor's height in CSS so its scanning shadows do not bleed over the footer log ticker.
+  ```
 * **The Agentic Workflow:**
   By prefixing the request with the explicit **`/goal`** trigger, the presenter tells the CLI to launch a comprehensive, thorough agent task that won't stop until all three criteria are verified. The agent scans the active UI code, identifies the exact coordinates, and structures a solution.
 
@@ -65,7 +67,9 @@ graph TD
 
 ### 1. The Human-Agent Handshake (Scoping & `/grill-me`)
 * **The Explicit Starting Prompt:**
-  > `/grill-me I want to show solar charging efficiency in a premium way. Maybe some kind of central sync gauge?`
+  ```bash
+  /grill-me I want to show solar charging efficiency in a premium way. Maybe some kind of central sync gauge?
+  ```
 * **The Agentic Workflow:**
   By prefixing the prompt with the explicit **`/grill-me`** trigger, the presenter forces the Antigravity-CLI to immediately bypass raw code writing and enter the interactive scoping interview loop. The agent boots its requirement-scoping persona and asks 2–3 precise architectural questions to lock down specifications:
   1. *What should the formula be?* (Determines: Cohesion % is Solar divided by Total House + EV load).
@@ -98,7 +102,9 @@ graph TD
 
 ### 1. The Human-Agent Handshake (Scoping)
 * **The Explicit Starting Prompt:**
-  > `/goal When the solar levels jitter, the EV relays toggle too fast. We need a way to tune Exponential Moving Average loop dampening on-the-fly. Create a physical dampening dial on the frontend that pushes real-time alpha config updates down to the Python backend.`
+  ```bash
+  /goal When the solar levels jitter, the EV relays toggle too fast. We need a way to tune Exponential Moving Average loop dampening on-the-fly. Create a physical dampening dial on the frontend that pushes real-time alpha config updates down to the Python backend.
+  ```
 * **The Agentic Workflow:**
   The presenter triggers the **`/goal`** command to instruct the agent to run a thorough control loop optimization cycle. The agent scans the backend charging loop logic, identifies the EMA smoothing coefficient ($\alpha$), and outlines a plan to construct a frontend control station.
 
