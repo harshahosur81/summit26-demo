@@ -1012,8 +1012,13 @@ body {
 
 
 /* --- TAB 2: CRT OSCILLOSCOPE MONITOR --- */
+.analytics-layout {
+    height: 100%;
+    margin-bottom: 0;
+}
+
 .crt-monitor-frame {
-    height: calc(100vh - 220px);
+    height: 100%;
     padding: 10px;
     background: #111111;
     border: 6px solid #2d2d2d;

@@ -73,29 +73,29 @@ export class EnergyFlowDiagram {
 
             <!-- ================= CONDUIT CHANNELS (BACKPIPE) ================= -->
             <!-- Solar to Inverter -->
-            <path id="pipe-solar" d="M 120,110 L 260,190" stroke="url(#metal-iron)" stroke-width="12" stroke-linecap="round" fill="none" />
+            <path id="pipe-solar" d="M 120,110 L 260,180" stroke="url(#metal-iron)" stroke-width="12" stroke-linecap="round" fill="none" />
             <!-- Inverter to House Load -->
-            <path id="pipe-house" d="M 340,210 L 480,130" stroke="url(#metal-iron)" stroke-width="12" stroke-linecap="round" fill="none" />
+            <path id="pipe-house" d="M 340,180 L 480,110" stroke="url(#metal-iron)" stroke-width="12" stroke-linecap="round" fill="none" />
             <!-- Grid to Inverter (Bi-directional) -->
-            <path id="pipe-grid" d="M 120,290 L 260,210" stroke="url(#metal-iron)" stroke-width="12" stroke-linecap="round" fill="none" />
+            <path id="pipe-grid" d="M 120,290 L 260,220" stroke="url(#metal-iron)" stroke-width="12" stroke-linecap="round" fill="none" />
             <!-- Inverter to Tesla EV -->
-            <path id="pipe-tesla" d="M 340,190 L 480,270" stroke="url(#metal-iron)" stroke-width="12" stroke-linecap="round" fill="none" />
+            <path id="pipe-tesla" d="M 340,220 L 480,290" stroke="url(#metal-iron)" stroke-width="12" stroke-linecap="round" fill="none" />
 
             <!-- ================= ENERGY GLOW CONDUITS (FOREGROUND) ================= -->
             <!-- Solar Flow -->
-            <path id="flow-solar" d="M 120,110 L 260,190" stroke="#ff8c00" stroke-width="4" stroke-dasharray="10, 15" fill="none" opacity="0.8" style="mix-blend-mode: screen;" />
+            <path id="flow-solar" d="M 120,110 L 260,180" stroke="#ff8c00" stroke-width="4" stroke-dasharray="10, 15" fill="none" opacity="0.8" style="mix-blend-mode: screen;" />
             <!-- House Flow -->
-            <path id="flow-house" d="M 260,210 L 480,130" stroke="#8a887b" stroke-width="4" stroke-dasharray="10, 15" fill="none" opacity="0.8" style="mix-blend-mode: screen;" />
+            <path id="flow-house" d="M 340,180 L 480,110" stroke="#8a887b" stroke-width="4" stroke-dasharray="10, 15" fill="none" opacity="0.8" style="mix-blend-mode: screen;" />
             <!-- Grid Flow (Bi-directional) -->
-            <path id="flow-grid" d="M 120,290 L 260,210" stroke="#14c2c2" stroke-width="4" stroke-dasharray="10, 15" fill="none" opacity="0.8" style="mix-blend-mode: screen;" />
+            <path id="flow-grid" d="M 120,290 L 260,220" stroke="#14c2c2" stroke-width="4" stroke-dasharray="10, 15" fill="none" opacity="0.8" style="mix-blend-mode: screen;" />
             <!-- Tesla EV Flow -->
-            <path id="flow-tesla" d="M 340,190 L 480,270" stroke="#c22929" stroke-width="4" stroke-dasharray="10, 15" fill="none" opacity="0.8" style="mix-blend-mode: screen;" />
+            <path id="flow-tesla" d="M 340,220 L 480,290" stroke="#c22929" stroke-width="4" stroke-dasharray="10, 15" fill="none" opacity="0.8" style="mix-blend-mode: screen;" />
 
             <!-- Pipe Rivets and Fittings at Junctions -->
             <circle cx="120" cy="110" r="10" fill="url(#metal-copper)" stroke="#111" stroke-width="2" />
-            <circle cx="480" cy="130" r="10" fill="url(#metal-copper)" stroke="#111" stroke-width="2" />
+            <circle cx="480" cy="110" r="10" fill="url(#metal-copper)" stroke="#111" stroke-width="2" />
             <circle cx="120" cy="290" r="10" fill="url(#metal-copper)" stroke="#111" stroke-width="2" />
-            <circle cx="480" cy="270" r="10" fill="url(#metal-copper)" stroke="#111" stroke-width="2" />
+            <circle cx="480" cy="290" r="10" fill="url(#metal-copper)" stroke="#111" stroke-width="2" />
 
             <!-- ================= ROTATING STEAM COGS ================= -->
             <!-- Central Inverter Gear Assembly -->
@@ -222,26 +222,26 @@ export class EnergyFlowDiagram {
     update(telemetry, tesla, phases) {
         if (!this.initialized) return;
 
-        const solarW = telemetry.solar_power_w || 0;
-        const houseW = telemetry.house_consumption_w || 0;
-        const gridW = telemetry.grid_export_w || 0; // Positive = Exporting, Negative = Importing
+        const solarW = Math.round(telemetry.solar_power_w || 0);
+        const houseW = Math.round(telemetry.house_consumption_w || 0);
+        const gridW = Math.round(telemetry.grid_export_w || 0); // Positive = Exporting, Negative = Importing
         
         // Compute active EV power based on amperage draw config
         const voltPerAmp = phases === 3 ? 690.0 : 230.0;
         const isCharging = tesla.charging_state === "Charging";
-        const evPowerW = isCharging ? (tesla.charge_current_request * voltPerAmp) : 0;
+        const evPowerW = isCharging ? Math.round(tesla.charge_current_request * voltPerAmp) : 0;
 
         // 1. Update text fields
         this.nodes.solarText.textContent = `${solarW} W`;
         this.nodes.houseText.textContent = `${houseW} W`;
         
         if (gridW >= 0) {
-            this.nodes.gridText.textContent = `EXP ${gridW}W`;
+            this.nodes.gridText.textContent = `EXP ${gridW} W`;
             this.nodes.gridText.setAttribute("fill", "#14c2c2");
             this.nodes.gridNode.querySelector('circle').setAttribute("stroke", "#14c2c2");
             this.nodes.gridNode.querySelector('circle').setAttribute("filter", "url(#glow-green)");
         } else {
-            this.nodes.gridText.textContent = `IMP ${Math.abs(gridW)}W`;
+            this.nodes.gridText.textContent = `IMP ${Math.abs(gridW)} W`;
             this.nodes.gridText.setAttribute("fill", "#c22929");
             this.nodes.gridNode.querySelector('circle').setAttribute("stroke", "#c22929");
             this.nodes.gridNode.querySelector('circle').setAttribute("filter", "url(#glow-crimson)");
