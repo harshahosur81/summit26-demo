@@ -213,8 +213,9 @@
 
             <!-- TAB 2: CRT ANALYTICS -->
             <section id="analytics-tab" class="tab-panel">
-                <div class="analytics-layout riveted-panel">
-                    <div class="crt-monitor-frame">
+                <div class="analytics-layout">
+                    <!-- Left: CRT Monitor -->
+                    <div class="crt-monitor-frame riveted-panel">
                         <div class="crt-screen">
                             <div class="crt-scanlines"></div>
                             <div class="crt-bezel-shadow"></div>
@@ -230,6 +231,56 @@
                                 <span class="legend-item text-steel">● HOUSE LOAD</span>
                                 <span class="legend-item text-crimson">● EV CHARGE</span>
                                 <span class="legend-item text-teal">● GRID EXPORT</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right: Steam/Brass Loop Tuner -->
+                    <div class="dampener-control-panel riveted-panel">
+                        <div class="section-title-bar">
+                            <h2>LOOP TUNING STATION</h2>
+                            <span class="sub-label">DAMPENING COEFFICIENT VALVE</span>
+                        </div>
+
+                        <div class="tuning-valve-description">
+                            <p class="typewriter-text text-dim">To prevent rapid mechanical contactor clicking on the Dynamo Tesla charger, this valve adjusts the smoothing window of the Exponential Moving Average (EMA).</p>
+                        </div>
+
+                        <!-- Tactical Potentiometer Slider -->
+                        <div class="control-widget potentiometer-panel" id="ema-tuning-widget">
+                            <span class="widget-label">EMA COEFFICIENT (ALPHA)</span>
+                            <div class="potentiometer-row">
+                                <div class="slider-track-container">
+                                    <input type="range" id="ema-tuning-slider" min="0.01" max="1.00" step="0.01" value="0.10" class="brass-potentiometer">
+                                    <div class="scale-notches">
+                                        <span>0.01 (Slow)</span><span>0.50</span><span>1.00 (Raw)</span>
+                                    </div>
+                                </div>
+                                <div class="small-nixie-glass">
+                                    <div class="small-nixie" id="nixie-ema-alpha-val">0.10</div>
+                                    <span class="nixie-dim">α</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Dynamic Control Loop Stats readout -->
+                        <div class="loop-status-box">
+                            <div class="status-table compact">
+                                <div class="row"><span>Effective Window:</span><strong id="val-tuning-window">~100 seconds</strong></div>
+                                <div class="row"><span>System Protection:</span><strong id="val-tuning-safety" style="color: var(--color-teal); text-shadow: 0 0 4px var(--color-teal-glow);">MAXIMUM SAFE</strong></div>
+                                <div class="row"><span>Loop Jitter Level:</span><strong id="val-tuning-jitter" style="color: var(--color-teal); text-shadow: 0 0 4px var(--color-teal-glow);">LOW</strong></div>
+                            </div>
+                        </div>
+
+                        <!-- Steampunk Pressure Gauge Overlay showing smoothing stability -->
+                        <div class="vibration-container">
+                            <span class="widget-label-sub">LOOP STABILITY STRENGTH</span>
+                            <div class="stability-light-bar">
+                                <div class="light-segment" id="seg-1"></div>
+                                <div class="light-segment" id="seg-2"></div>
+                                <div class="light-segment" id="seg-3"></div>
+                                <div class="light-segment" id="seg-4"></div>
+                                <div class="light-segment" id="seg-5"></div>
                             </div>
                         </div>
                     </div>

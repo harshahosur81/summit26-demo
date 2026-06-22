@@ -1011,10 +1011,12 @@ body {
 }
 
 
-/* --- TAB 2: CRT OSCILLOSCOPE MONITOR --- */
+/* --- TAB 2: CRT OSCILLOSCOPE MONITOR & TUNING STATION --- */
 .analytics-layout {
+    display: grid;
+    grid-template-columns: 60% 40%;
+    gap: 16px;
     height: 100%;
-    margin-bottom: 0;
 }
 
 .crt-monitor-frame {
@@ -1027,6 +1029,105 @@ body {
         inset 0 4px 10px rgba(0,0,0,0.9), 
         0 10px 25px rgba(0,0,0,0.8);
     position: relative;
+    margin-bottom: 0;
+}
+
+.dampener-control-panel {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+    margin-bottom: 0;
+}
+
+.tuning-valve-description {
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px dashed #3a3222;
+    padding: 12px;
+    border-radius: 4px;
+    margin: 8px 0;
+}
+
+.typewriter-text {
+    font-family: 'Special Elite', serif;
+    font-size: 0.75rem;
+    line-height: 1.4;
+    color: #a49a88;
+}
+
+.loop-status-box {
+    background: #0c0a08;
+    border: 1px solid #1f1812;
+    border-radius: 4px;
+    padding: 10px;
+    margin: 8px 0;
+}
+
+.status-table.compact {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.status-table.compact .row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.72rem;
+    font-family: 'Share Tech Mono', monospace;
+    border-bottom: 1px dashed rgba(255, 255, 255, 0.05);
+    padding-bottom: 4px;
+}
+
+.status-table.compact .row:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.vibration-container {
+    padding: 10px;
+    background: rgba(0,0,0,0.2);
+    border-radius: 4px;
+    border: 1px solid rgba(138, 136, 123, 0.1);
+}
+
+.stability-light-bar {
+    display: flex;
+    gap: 6px;
+    margin-top: 10px;
+}
+
+.light-segment {
+    flex-grow: 1;
+    height: 8px;
+    background: #221c15;
+    border-radius: 2px;
+    transition: background 0.3s, box-shadow 0.3s;
+}
+
+.light-segment.active-teal {
+    background: var(--color-teal);
+    box-shadow: 0 0 8px var(--color-teal-glow);
+}
+
+.light-segment.active-amber {
+    background: var(--color-nixie-orange);
+    box-shadow: 0 0 8px var(--color-nixie-glow);
+}
+
+.light-segment.active-crimson {
+    background: var(--color-crimson);
+    box-shadow: 0 0 8px var(--color-crimson-glow);
+}
+
+@media (max-width: 900px) {
+    .analytics-layout {
+        grid-template-columns: 1fr;
+        height: auto;
+        overflow-y: auto;
+    }
+    .crt-monitor-frame {
+        height: 400px;
+    }
 }
 
 /* Authentic CRT Curved Screen overlay */

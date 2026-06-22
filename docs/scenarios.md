@@ -10,7 +10,7 @@ This document serves as the canonical playbook for live demonstrations of the Te
 | :--- | :--- | :--- | :--- | :--- | :--- |
 | **SC-1** | **Fix** | Kinetic Power Flow & CRT Viewport Fix | `src/frontend/modules/svg_flow.js`<br>`src/frontend/index.css` | Align SVG conduits on-axis, round telemetry floats, and constrain CRT container overflow. | **Approved & Live** |
 | **SC-2** | **Feature** | Integrated "Lux Sync" Green Cohesion Dial | `src/frontend/modules/svg_flow.js` | Create an integrated central dial measuring real-time solar self-sufficiency. | **Approved & Live** |
-| **SC-3** | **Optimization** | Dynamic EMA Alpha Control Loop Tuning | `src/frontend/modules/config.js`<br>`src/backend/main.py`<br>`src/backend/drivers/goodwe_driver.py` | Add a tactile configuration slider to adjust solar data smoothing on-the-fly. | **Ready for Dev** |
+| **SC-3** | **Optimization** | Dynamic EMA Alpha Control Loop Tuning | `src/frontend/index.html`<br>`src/frontend/index.css`<br>`src/frontend/modules/config.js`<br>`src/frontend/app.js` | Add a tactile configuration slider and Nixie readout to adjust loop dampening on-the-fly. | **Approved & Live** |
 
 ---
 

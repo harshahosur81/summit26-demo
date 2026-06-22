@@ -249,6 +249,11 @@ class SteampunkControllerApp {
         const override = status.override || {};
         const config = status.config || {};
 
+        // Sync real-time config to manager (tuning slider + blueprints)
+        if (this.configManager) {
+            this.configManager.syncConfig(config);
+        }
+
         // 1. Sync Server Epoch time displays
         const dateObj = new Date(status.timestamp * 1000);
         this.serverTimeDisplay.textContent = dateObj.toLocaleTimeString();
