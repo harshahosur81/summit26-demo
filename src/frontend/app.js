@@ -443,8 +443,20 @@ class SteampunkControllerApp {
     resizeCanvas() {
         if (!this.canvas) return;
         const rect = this.canvas.parentElement.getBoundingClientRect();
-        this.canvas.width = rect.width;
-        this.canvas.height = rect.height;
+        const dpr = window.devicePixelRatio || 1;
+        
+        // Scale internal drawing sheet to high-resolution physical pixels
+        this.canvas.width = rect.width * dpr;
+        this.canvas.height = rect.height * dpr;
+        
+        // Force the CSS visual size back to the standard dimensions
+        this.canvas.style.width = `${rect.width}px`;
+        this.canvas.style.height = `${rect.height}px`;
+        
+        // Scale context coordinates to account for high density
+        if (this.ctx) {
+            this.ctx.scale(dpr, dpr);
+        }
     }
 
     /**
